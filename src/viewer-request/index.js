@@ -1,7 +1,7 @@
 import {
   createInstance,
   enums as OptimizelyEnums,
-} from './optimizely.lite.js'
+} from '@optimizely/optimizely-sdk/dist/optimizely.lite.es';
 import https from 'https'
 
 // Lambda@Edge does not support ENV variables

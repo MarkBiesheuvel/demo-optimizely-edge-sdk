@@ -54,12 +54,7 @@ class OptimizelyEdgeSdkStack(Stack):
             self, 'ViewerRequestFunction',
             runtime=lambda_.Runtime.NODEJS_16_X,
             code=lambda_.Code.from_asset(
-                path='src/viewer-request',
-                exclude=[
-                    '.gitignore', # Don't need gitignore
-                    '**/package-lock.json', # Don't need lock files
-                    'node_modules/**/*.!(js|json)', # Exclude anything that isn't JavaScript or JSON
-                ],
+                path='dist/viewer-request'
             ),
             handler='index.handler',
             # current_version_options=lambda_.VersionOptions(
