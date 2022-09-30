@@ -1,0 +1,7 @@
+{
+    "type": "module",
+    "dependencies": {
+        "@optimizely/js-sdk-logging": "^0.3.1",
+        "murmurhash": "^2.0.1"
+    }
+}
