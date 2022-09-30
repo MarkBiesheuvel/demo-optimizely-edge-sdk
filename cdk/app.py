@@ -50,6 +50,23 @@ class OptimizelyEdgeSdkStack(Stack):
         origin_identity = cloudfront.OriginAccessIdentity(self, 'Identity')
         bucket.grant_read(origin_identity.grant_principal)
 
+        viewer_request_function = lambda_.Function(
+            self, 'ViewerRequestFunction',
+            runtime=lambda_.Runtime.NODEJS_16_X,
+            code=lambda_.Code.from_asset(
+                path='src/viewer-request',
+                exclude=[
+                    '.gitignore', # Don't need gitignore
+                    '**/package-lock.json', # Don't need lock files
+                    'node_modules/**/*.!(js|json)', # Exclude anything that isn't JavaScript or JSON
+                ],
+            ),
+            handler='index.handler',
+            # current_version_options=lambda_.VersionOptions(
+            #     retry_attempts=0,
+            # )
+        )
+
         # Public SSL certificate for subdomain
         certificate = acm.DnsValidatedCertificate(
             self, 'Certificate',
@@ -96,7 +113,7 @@ app = App()
 OptimizelyEdgeSdkStack(app, 'OptimizelyEdgeSdk',
     env=Environment(
         account=os.getenv('CDK_DEFAULT_ACCOUNT'),
-        region=os.getenv('CDK_DEFAULT_REGION')
+        region='us-east-1', # Needs to be N. Virginia since using Lambda@Edge
     ),
 )
 app.synth()

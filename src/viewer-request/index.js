@@ -1,6 +1,6 @@
 import {
-    createInstance,
-    enums as OptimizelyEnums,
+  createInstance,
+  enums as OptimizelyEnums,
 } from './optimizely.lite.js'
 import https from 'https'
 
@@ -14,7 +14,7 @@ const OPTIMIZELY_SDK_KEY = 'KVpGWnzPGKvvQ8yeEWmJZ'
  * @param string datafilePath - CDN path to datafile based on SDK Key.
  * @returns Promise
  */
- const getDatafileRequest = async (datafilePath) => new Promise(
+const getDatafileRequest = async (datafilePath) => new Promise(
   (resolve, reject) => {
     const options = {
       hostname: 'cdn.optimizely.com',
@@ -63,11 +63,14 @@ const optimizelyClient = createInstance({
   clientEngine: 'javascript-sdk/aws-lambda-at-edge',
 })
 
-// Example: different variation and path for different users
-const users = ['mark', 'dejan', 'james', 'ed', 'joshua', 'simon', 'rob', 'ryan']
-users.forEach((userId) => {
-  const optimizelyUserContext = optimizelyClient.createUserContext(userId)
-  const { variationKey, variables } = optimizelyUserContext.decide('hero_layout')
+export const handler = async (event, context) => {
 
-  console.log(`For user=${userId}\tvariation=${variationKey}\tpath=${variables.path}`)
-})
+  // Example: different variation and path for different users
+  const users = ['mark', 'dejan', 'james', 'ed', 'joshua', 'simon', 'rob', 'ryan']
+  users.forEach((userId) => {
+    const optimizelyUserContext = optimizelyClient.createUserContext(userId)
+    const { variationKey, variables } = optimizelyUserContext.decide('hero_layout')
+
+    console.log(`For user=${userId}\tvariation=${variationKey}\tpath=${variables.path}`)
+  })
+}
