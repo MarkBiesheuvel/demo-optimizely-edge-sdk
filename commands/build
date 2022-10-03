@@ -3,5 +3,8 @@
 # Building code for viewer-request function
 (cd src/viewer-request; npm run build)
 
+# Building code for viewer-request function
+(cd src/viewer-response; npm run build)
+
 # Deploying infrastructure
 cdk deploy

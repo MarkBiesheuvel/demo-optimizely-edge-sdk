@@ -10,7 +10,8 @@ import {
 const OPTIMIZELY_SDK_KEY = 'KVpGWnzPGKvvQ8yeEWmJZ'
 
 // Name of cookie used to identify users
-const COOKIE_NAME_USER_ID = 'myCustomUserID'
+const USER_ID_COOKIE_NAME = 'myCustomUserID'
+const USER_ID_HEADER_NAME = 'X-User-Id'
 
 // Initialize Optimizely client from datafile (sdkKey is not supported in Edge SDK)
 // NOTE: I have removed the TTL as seen in @optimizely/aws-lambda-at-edge-starter-kit
@@ -26,10 +27,10 @@ const OPTIMIZELY_CLIENT = createInstance({
  * @param {Object} request - CloudFront request object
  * @returns {Object}
  */
-const getCookieObject = ({ headers }) => {
-  if ('cookie' in headers) {
+const getCookieObject = (request) => {
+  if (request.headers.cookie) {
     // The cookie string will contain equal signs and semicolons, so it needs to be parsed
-    return cookie.parse(headers.cookie[0].value)
+    return cookie.parse(request.headers.cookie[0].value)
   } else {
     // No cookies set
     return {}
@@ -43,9 +44,9 @@ const getCookieObject = ({ headers }) => {
  * @returns {string}
  */
 const getUserId = (cookies) => {
-  if (COOKIE_NAME_USER_ID in cookies) {
+  if (USER_ID_COOKIE_NAME in cookies) {
     // Found existing user ID
-    return cookies[COOKIE_NAME_USER_ID]
+    return cookies[USER_ID_COOKIE_NAME]
   } else {
     // Generate new user ID
     return randomUUID()
@@ -66,7 +67,14 @@ export const handler = async (event, context, callback) => {
   // Getting user ID from request object
   const cookies = getCookieObject(request)
   const userId = getUserId(cookies)
-  console.log(`User ID is ${userId}`)
+
+  // Set a custom header with the user ID
+  request.headers[USER_ID_HEADER_NAME.toLowerCase()] = [
+    {
+      key: USER_ID_HEADER_NAME,
+      value: userId
+    }
+  ]
 
   // Creating Optimizely user context
   // TODO: only create context if we need a decision
@@ -75,8 +83,7 @@ export const handler = async (event, context, callback) => {
   // Decide redirect experiment on home page
   if (request.uri == '/' || request.uri == '/index.html') {
     // Make decision
-    const { variationKey, variables } = optimizelyUserContext.decide('hero_layout')
-    console.log(`Variation is ${variationKey}`)
+    const { variables } = optimizelyUserContext.decide('hero_layout')
 
     // Update request object with new path
     request.uri = variables.path

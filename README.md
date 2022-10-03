@@ -17,6 +17,7 @@ The Lambda@Edge functions need to be bundled before deploying. Run `build` comma
 
 ```sh
 (cd src/viewer-request; npm run build)
+(cd src/viewer-response; npm run build)
 ```
 
 ## Setup of AWS CDK

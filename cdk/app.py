@@ -62,6 +62,18 @@ class OptimizelyEdgeSdkStack(Stack):
             )
         )
 
+        viewer_response_function = lambda_.Function(
+            self, 'ViewerResponseFunction',
+            runtime=lambda_.Runtime.NODEJS_16_X,
+            code=lambda_.Code.from_asset(
+                path='dist/viewer-response'
+            ),
+            handler='index.handler',
+            current_version_options=lambda_.VersionOptions(
+                retry_attempts=0,
+            )
+        )
+
         # Public SSL certificate for subdomain
         certificate = acm.DnsValidatedCertificate(
             self, 'Certificate',
@@ -87,6 +99,10 @@ class OptimizelyEdgeSdkStack(Stack):
                     cloudfront.EdgeLambda(
                         event_type=cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
                         function_version=viewer_request_function.current_version,
+                    ),
+                    cloudfront.EdgeLambda(
+                        event_type=cloudfront.LambdaEdgeEventType.VIEWER_RESPONSE,
+                        function_version=viewer_response_function.current_version,
                     ),
                 ],
             ),
