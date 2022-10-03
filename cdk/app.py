@@ -57,9 +57,9 @@ class OptimizelyEdgeSdkStack(Stack):
                 path='dist/viewer-request'
             ),
             handler='index.handler',
-            # current_version_options=lambda_.VersionOptions(
-            #     retry_attempts=0,
-            # )
+            current_version_options=lambda_.VersionOptions(
+                retry_attempts=0,
+            )
         )
 
         # Public SSL certificate for subdomain
@@ -82,8 +82,15 @@ class OptimizelyEdgeSdkStack(Stack):
                     origin_access_identity=origin_identity,
                 ),
                 viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-                cache_policy=cloudfront.CachePolicy.CACHING_DISABLED,
-            )
+                cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
+                edge_lambdas=[
+                    cloudfront.EdgeLambda(
+                        event_type=cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+                        function_version=viewer_request_function.current_version,
+                    ),
+                ],
+            ),
+
         )
 
         # Both IPv4 and IPv6 addresses

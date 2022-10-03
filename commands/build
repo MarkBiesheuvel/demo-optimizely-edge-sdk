@@ -1,0 +1,7 @@
+#!/usr/bin/sh
+
+# Building code for viewer-request function
+(cd src/viewer-request; npm run build)
+
+# Deploying infrastructure
+cdk deploy

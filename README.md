@@ -44,3 +44,7 @@ To deploy the CDK template:
 ```sh
 cdk deploy
 ```
+
+## Inspiration
+
+Inspiration taken from https://github.com/optimizely/aws-lambda-at-edge-starter-kit

@@ -28,6 +28,7 @@ export default {
     terser({
       format: {
         comments: false,
+        preamble: '/* Viewer Request function */'
       },
     }),
   ],
