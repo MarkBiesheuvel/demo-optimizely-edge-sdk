@@ -32,6 +32,8 @@ export const handler = async (event, context, callback) => {
     }
   ]
 
+  // TODO: Add variation key in response cookie and send decision to logx.optimizely.com
+
   // Return the updated response object to CloudFront
   // TODO: return a promise instead
   callback(null, response)

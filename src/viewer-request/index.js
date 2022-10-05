@@ -68,6 +68,8 @@ export const handler = async (event, context, callback) => {
   const cookies = getCookieObject(request)
   const userId = getUserId(cookies)
 
+  // TODO: retrieve variation key from Cookie and skip decision if found
+
   // Set a custom header with the user ID
   request.headers[USER_ID_HEADER_NAME.toLowerCase()] = [
     {
@@ -87,6 +89,9 @@ export const handler = async (event, context, callback) => {
 
     // Update request object with new path
     request.uri = variables.path
+
+    // TODO: add variation key to request object
+    // TODO: do something with the variation key in origin response function
   }
 
   // Return the updated request object to CloudFront
