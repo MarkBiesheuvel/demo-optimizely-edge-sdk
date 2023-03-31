@@ -5,18 +5,18 @@ The user won't actually be redirected, as the CDN will simply request a differen
 
 ## How it works
 
-1. User makes a reqeust to "example.com/index.html".
+1. User makes a request to "example.com/index.html".
 2. The request is routed to a Content Delivery Network (CDN) like AWS CloudFront.
 3. A viewer-request function (or edgeworker):
-    - Imports the Optimizely Edge SDK
-    - A user ID is generated or retrieved from a cookie
-    - Creates a UserContext with an attribute for the current URI
-    - Calls the decide method on the `redirect` flag
-    - Updates the request object if applicable
+    - imports the Optimizely Edge SDK.
+    - generated a user ID or retrieves it from a cookie.
+    - creates a UserContext with an attribute for the current URI.
+    - calls the decide method on the `redirect` flag.
+    - updates the request object if applicable.
 4. The request is now routed to the updated URI at the origin server or the response is retrieved from cache.
 5. A view-response function (or edgeworker):
-    - Sets the user ID cookie
-6. The response is send to the user
+    - Sets the user ID cookie.
+6. The response is sent to the user.
 
 ## System requirements
 
