@@ -1,15 +1,15 @@
-import { nodeResolve } from '@rollup/plugin-node-resolve'
-import commonjs from '@rollup/plugin-commonjs'
-import copy from 'rollup-plugin-copy'
-import { terser } from 'rollup-plugin-terser'
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import copy from 'rollup-plugin-copy';
+import { terser } from 'rollup-plugin-terser';
 
-const DESTINATION = '../../dist/viewer-request'
+const DESTINATION = '../../dist/viewer-request';
 
 export default {
   input: 'index.js',
   output: {
     format: 'es',
-    dir: DESTINATION,
+    dir: DESTINATION
   },
   preserveModules: false,
   plugins: [
@@ -22,14 +22,14 @@ export default {
         {
           src: 'package.json',
           dest: DESTINATION
-        },
+        }
       ]
     }),
     terser({
       format: {
         comments: false,
         preamble: '/* Viewer Request function */'
-      },
-    }),
-  ],
-}
+      }
+    })
+  ]
+};

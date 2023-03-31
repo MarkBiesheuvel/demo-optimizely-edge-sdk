@@ -1,4 +1,4 @@
-import https from 'https' // Standard library
+import https from 'https'; // Standard library
 
 /**
  * getDatafileRequest - Retrieves the datafile from the Optimizely CDN and returns as a JSON object.
@@ -6,7 +6,7 @@ import https from 'https' // Standard library
  * @param string datafilePath - CDN path to datafile based on SDK Key.
  * @returns Promise
  */
- export const getDatafileRequest = async (datafilePath) => new Promise(
+export const getDatafileRequest = async (datafilePath) => new Promise(
   (resolve, reject) => {
     const options = {
       hostname: 'cdn.optimizely.com',
@@ -14,31 +14,31 @@ import https from 'https' // Standard library
       path: datafilePath,
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-      },
-    }
+        'Content-Type': 'application/json'
+      }
+    };
 
     const req = https.get(options, (res) => {
-      res.setEncoding('utf8')
-      let body = ''
+      res.setEncoding('utf8');
+      let body = '';
 
       res.on('data', (chunk) => {
-        body += chunk
-      })
+        body += chunk;
+      });
 
       res.on('end', () => {
         try {
-          resolve(JSON.parse(body))
+          resolve(JSON.parse(body));
         } catch (err) {
-          reject(err)
+          reject(err);
         }
-      })
-    })
+      });
+    });
 
     req.on('error', (err) => {
-      reject(err)
-    })
+      reject(err);
+    });
 
-    req.end()
+    req.end();
   }
-)
+);
