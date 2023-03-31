@@ -1,9 +1,12 @@
 import cookie from 'cookie';
 
-// Name of cookie used to identify users
+// Name of cookie and HTTP header used to identify users
 const USER_ID_COOKIE_NAME = 'myCustomUserID';
 const USER_ID_COOKIE_MAX_AGE = 15780000;
 const USER_ID_HEADER_NAME = 'X-User-Id';
+
+// Name of HTTP header to identify variation
+const VARIATION_KEY_HEADER_NAME = 'X-Redirect-Variation-Key';
 
 /**
  * handler - Entrypoint of the Lambda function
@@ -31,7 +34,17 @@ export const handler = async (event, context, callback) => {
     }
   ];
 
-  // TODO: Add variation key in response cookie and send decision to logx.optimizely.com
+  // Get user ID from request object
+  const variationKey = request.headers[VARIATION_KEY_HEADER_NAME.toLocaleLowerCase()][0].value;
+
+  // Include the variation key in the response
+  // TODO: send decision to logx.optimizely.com from front-end
+  response.headers[VARIATION_KEY_HEADER_NAME.toLocaleLowerCase()] = [
+    {
+      key: VARIATION_KEY_HEADER_NAME,
+      value: variationKey
+    }
+  ];
 
   // Return the updated response object to CloudFront
   // TODO: return a promise instead

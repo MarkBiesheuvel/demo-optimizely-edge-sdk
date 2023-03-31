@@ -9,9 +9,12 @@ import {
 // Lambda@Edge does not support ENV variables
 const OPTIMIZELY_SDK_KEY = 'KVpGWnzPGKvvQ8yeEWmJZ';
 
-// Name of cookie used to identify users
+// Name of cookie and HTTP header used to identify users
 const USER_ID_COOKIE_NAME = 'myCustomUserID';
 const USER_ID_HEADER_NAME = 'X-User-Id';
+
+// Name of HTTP header to identify variation
+const VARIATION_KEY_HEADER_NAME = 'X-Redirect-Variation-Key';
 
 // Initialize Optimizely client from datafile (sdkKey is not supported in Edge SDK)
 // NOTE: I have removed the TTL as seen in @optimizely/aws-lambda-at-edge-starter-kit
@@ -68,8 +71,6 @@ export const handler = async (event, context, callback) => {
   const cookies = getCookieObject(request);
   const userId = getUserId(cookies);
 
-  // TODO: retrieve variation key from Cookie and skip decision if found
-
   // Set a custom header with the user ID
   request.headers[USER_ID_HEADER_NAME.toLowerCase()] = [
     {
@@ -79,19 +80,25 @@ export const handler = async (event, context, callback) => {
   ];
 
   // Creating Optimizely user context
-  // TODO: only create context if we need a decision
-  const optimizelyUserContext = OPTIMIZELY_CLIENT.createUserContext(userId);
+  const optimizelyUserContext = OPTIMIZELY_CLIENT.createUserContext(userId, {
+    currentUri: request.uri
+  });
 
-  // Decide redirect experiment on home page
-  if (request.uri == '/' || request.uri == '/index.html') {
-    // Make decision
-    const { variables } = optimizelyUserContext.decide('hero_layout');
+  // Make decision based on audience conditions
+  const {enabled, variables, variationKey} = optimizelyUserContext.decide('redirect');
 
-    // Update request object with new path
-    request.uri = variables.path;
+  // Set a custom header with the variation ID
+  request.headers[VARIATION_KEY_HEADER_NAME.toLowerCase()] = [
+    {
+      key: VARIATION_KEY_HEADER_NAME,
+      value: variationKey
+    }
+  ];
 
-    // TODO: add variation key to request object
-    // TODO: do something with the variation key in origin response function
+  // If the redirect feature is enabled, ...
+  if (enabled) {
+    // ... update request object with new URI
+    request.uri = variables.uri;
   }
 
   // Return the updated request object to CloudFront
